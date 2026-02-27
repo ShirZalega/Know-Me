@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>דע - אותי! | Know Me!</title>
     <style>
-        /* CSS Variables for easy theme management */
+        /* CSS Variables for consistent styling */
         :root {
             --bg: #1a1a1a;
             --card: #2d2d2d;
@@ -14,7 +14,7 @@
             --shot-color: #ffd166;
         }
 
-        /* Basic Layout & Typography */
+        /* Basic Layout & Background */
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: var(--bg);
@@ -40,7 +40,7 @@
             font-size: 2.5rem;
         }
 
-        /* Styling for the category indicator */
+        /* Category Label Styling */
         .category-badge {
             display: inline-block;
             padding: 8px 20px;
@@ -52,7 +52,7 @@
             transition: background 0.3s ease;
         }
 
-        /* The main display for questions */
+        /* Main Question Display Card */
         .question-card {
             background: var(--card);
             padding: 30px;
@@ -68,7 +68,7 @@
             transition: transform 0.2s ease;
         }
 
-        /* Button styling */
+        /* Main Action Button */
         button {
             background: var(--accent);
             color: white;
@@ -91,10 +91,11 @@
             margin-bottom: 15px; 
         }
 
+        /* Shot message specific styling */
         .shot-msg { 
             color: var(--shot-color); 
             font-weight: bold; 
-            font-size: 2rem; 
+            font-size: 2.2rem; 
         }
     </style>
 </head>
@@ -109,7 +110,7 @@
 </div>
 
 <script>
-    /* Game Content Data */
+    /* Game Content Database */
     const data = {
         1: { 
             name: "הכרות עמוקה", 
@@ -129,51 +130,51 @@
         }
     };
 
-    /* Memory object to track shown questions per category to prevent repetition */
+    /* Tracking used questions to ensure zero repetition per category */
     const usedQuestions = { 1: [], 2: [], 3: [], 4: [] };
     
-    /* Visual dice representation */
+    /* Unicode dice icons for visual feedback */
     const diceIcons = ["", "⚀", "⚁", "⚂", "⚃", "⚄", "⚅"];
 
     /**
-     * The main game logic function
+     * Handles the dice roll logic and UI updates
      */
     function play() {
-        // Roll a dice (1 to 6)
+        // Roll a random number between 1 and 6
         const roll = Math.floor(Math.random() * 6) + 1;
         document.getElementById('diceDisplay').innerText = diceIcons[roll];
         
         const qDisplay = document.getElementById('questionDisplay');
         const cDisplay = document.getElementById('categoryDisplay');
 
-        // Handles categories 1 through 4
+        // Roll 1-4: Show a unique question from the corresponding category
         if (roll <= 4) {
             const category = data[roll];
             
-            // If all questions in this category were used, reset the pool
+            // If all questions in this category have been used, reset the tracker
             if (usedQuestions[roll].length === category.questions.length) {
                 usedQuestions[roll] = [];
             }
 
-            // Pick a random index that hasn't been used yet
+            // Find a random question index that hasn't been used yet
             let randomIndex;
             do {
                 randomIndex = Math.floor(Math.random() * category.questions.length);
             } while (usedQuestions[roll].includes(randomIndex));
 
-            // Record this index as used
+            // Mark the index as used
             usedQuestions[roll].push(randomIndex);
 
-            // Update UI with the selected question
+            // Display the question and update the category badge
             const randomQ = category.questions[randomIndex];
             cDisplay.innerText = category.name;
             cDisplay.style.background = "#ff4d6d";
             qDisplay.innerText = randomQ;
             
         } else {
-            // Handles rolls 5 and 6 (Drinking Shot)
+            // Roll 5-6: Trigger the Shot event
             cDisplay.innerText = "זמן לשוט! 🥃";
-            cDisplay.style.background = "#ffd166"; // Yellowish color for the shot event
+            cDisplay.style.background = "#ffd166"; // Distinct color for shots
             qDisplay.innerHTML = "<span class='shot-msg'>שותים שוט! 🥃</span>";
         }
     }
