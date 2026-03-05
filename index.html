@@ -6,19 +6,32 @@
     
     <title>Know Me | דע - אותי</title>
     
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;600;800&display=swap" rel="stylesheet">
+    
     <style>
-        /* CSS Variables for easy theme management */
+        /* CSS Variables - Boho Nature Palette */
         :root {
-            --bg: #1a1a1a;
-            --card: #2d2d2d;
-            --accent: #ff4d6d;
-            --text: #f0f0f0;
-            --shot-color: #ffd166;
+            --bg: #F7F5F0; /* Soft warm sand/off-white */
+            --card: #FFFFFF; /* Pure white for cards to pop */
+            --text: #4A403A; /* Deep warm grey/brown instead of harsh black */
+            --text-light: #8A817C;
+            --shadow: rgba(74, 64, 58, 0.08); /* Soft organic shadow */
+            
+            /* Dynamic Accent Color (Changes via JS) */
+            --accent: #C87971; /* Default Terracotta */
+            
+            /* Category Colors */
+            --color-couples: #C87971; /* Terracotta / Rose */
+            --color-friends: #D4A373; /* Warm Sand / Mustard */
+            --color-family: #8A9A86;  /* Sage Green */
+            --color-shot: #E2B464;    /* Soft Gold */
         }
 
         /* Essential mobile viewport setup */
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Assistant', sans-serif;
             background-color: var(--bg);
             color: var(--text);
             display: flex;
@@ -28,7 +41,7 @@
             height: 100vh;
             height: 100dvh; 
             margin: 0;
-            padding: env(safe-area-inset-top) 10px env(safe-area-inset-bottom) 10px;
+            padding: env(safe-area-inset-top) 15px env(safe-area-inset-bottom) 15px;
             box-sizing: border-box;
             overflow: hidden;
             touch-action: manipulation;
@@ -46,29 +59,42 @@
         }
 
         .menu-title {
-            color: var(--accent);
-            font-size: 2.5rem;
-            margin-bottom: 20px;
-            text-shadow: 0 0 10px rgba(255, 77, 109, 0.5);
+            color: var(--text);
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 30px;
+            letter-spacing: 1px;
         }
 
         .category-btn {
-            width: 80%;
-            max-width: 300px;
-            padding: 15px;
-            border-radius: 15px;
-            border: 2px solid var(--accent);
-            background: transparent;
+            width: 85%;
+            max-width: 320px;
+            padding: 18px 25px;
+            border-radius: 20px;
+            border: none;
+            background: var(--card);
             color: var(--text);
-            font-size: 1.2rem;
-            font-weight: bold;
+            font-size: 1.3rem;
+            font-weight: 600;
+            font-family: inherit;
             cursor: pointer;
-            transition: all 0.2s;
+            box-shadow: 0 8px 20px var(--shadow);
+            transition: all 0.2s ease;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
         .category-btn:active {
-            background: var(--accent);
-            transform: scale(0.95);
+            transform: scale(0.96);
+            box-shadow: 0 4px 10px var(--shadow);
+        }
+
+        /* Little color indicators on menu buttons */
+        .indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
         }
 
         /* Game Screen Styles (Hidden by default) */
@@ -83,28 +109,30 @@
 
         /* Shot Counter Components */
         .shot-counter {
-            background: rgba(255, 255, 255, 0.05);
-            padding: 5px 15px;
-            border-radius: 12px;
-            width: 100%;
+            background: var(--card);
+            padding: 8px 15px;
+            border-radius: 20px;
+            width: 90%;
             max-width: 380px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             box-sizing: border-box;
-            height: 50px;
+            height: 55px;
+            box-shadow: 0 4px 15px var(--shadow);
         }
 
         .player-top { transform: rotate(180deg); }
-        .shot-display { font-size: 1.2rem; letter-spacing: 2px; }
-        .shot-glass { opacity: 0.2; transition: all 0.3s ease; }
-        .shot-glass.filled { opacity: 1; filter: drop-shadow(0 0 5px var(--shot-color)); }
+        .shot-display { font-size: 1.3rem; letter-spacing: 5px; }
+        .shot-glass { opacity: 0.15; transition: all 0.3s ease; filter: grayscale(100%); }
+        .shot-glass.filled { opacity: 1; filter: grayscale(0%); }
 
         .group-label {
-            font-size: 0.8rem;
-            color: #aaa;
+            font-size: 0.85rem;
+            color: var(--text-light);
             position: absolute;
-            margin-top: -35px;
+            margin-top: -45px;
+            font-weight: 600;
         }
 
         /* Game Area Elements */
@@ -115,27 +143,37 @@
             align-items: center;
             justify-content: center;
             flex-grow: 1;
-            gap: 15px;
+            gap: 20px;
         }
 
-        h1 { color: var(--accent); margin: 0; font-size: 1.6rem; }
-        .dice-roll { font-size: 2.8rem; line-height: 1; }
-        .category-badge { padding: 5px 15px; border-radius: 20px; font-weight: bold; background: var(--accent); font-size: 0.85rem; }
+        h1 { color: var(--text); margin: 0; font-size: 1.8rem; font-weight: 800; }
+        .dice-roll { font-size: 3.5rem; line-height: 1; color: var(--text); }
+        
+        .category-badge { 
+            padding: 6px 20px; 
+            border-radius: 30px; 
+            font-weight: 600; 
+            background: var(--accent); 
+            color: white;
+            font-size: 1rem; 
+            transition: background-color 0.3s ease;
+        }
         
         .question-card {
             background: var(--card);
-            padding: 20px;
-            border-radius: 15px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.4);
-            min-height: 140px;
+            padding: 30px 25px;
+            border-radius: 25px;
+            box-shadow: 0 10px 30px var(--shadow);
+            min-height: 160px;
             width: 90%;
             max-width: 350px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.2rem;
+            font-size: 1.4rem;
             text-align: center;
-            border: 1px solid #444;
+            font-weight: 600;
+            line-height: 1.4;
             box-sizing: border-box;
         }
 
@@ -144,35 +182,61 @@
             background: var(--accent);
             color: white;
             border: none;
-            padding: 12px 35px;
-            font-size: 1.1rem;
+            padding: 16px 45px;
+            font-size: 1.2rem;
             border-radius: 50px;
-            font-weight: bold;
-            box-shadow: 0 4px 10px rgba(255, 77, 109, 0.3);
+            font-weight: 800;
+            font-family: inherit;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
             cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-main:active {
+            transform: scale(0.95);
         }
 
         .btn-back {
             background: transparent;
-            color: #888;
+            color: var(--text-light);
             border: none;
-            margin-top: 10px;
-            text-decoration: underline;
-            font-size: 0.9rem;
+            margin-top: 5px;
+            font-size: 1rem;
+            font-weight: 600;
+            font-family: inherit;
             cursor: pointer;
         }
 
-        .btn-shot { background: var(--shot-color); border: none; width: 30px; height: 30px; border-radius: 50%; font-weight: bold; cursor: pointer; color: #1a1a1a; }
-        .shot-msg { color: var(--shot-color); font-weight: bold; font-size: 1.5rem; }
+        .btn-shot { 
+            background: transparent; 
+            color: var(--text-light);
+            border: none; 
+            width: 35px; 
+            height: 35px; 
+            font-weight: 800; 
+            font-size: 1.2rem;
+            cursor: pointer; 
+        }
+        
+        .shot-msg { color: var(--color-shot); font-weight: 800; font-size: 1.6rem; }
     </style>
 </head>
 <body>
 
     <div id="menuScreen">
         <div class="menu-title">Know Me</div>
-        <button class="category-btn" onclick="startGame('couples')">זוגות 🤍</button>
-        <button class="category-btn" onclick="startGame('friends')">חברים 🍻</button>
-        <button class="category-btn" onclick="startGame('family')" style="border-color: #4da6ff;">הורה וילד 👨‍👧</button>
+        <button class="category-btn" onclick="startGame('couples')">
+            <span>זוגות 🤍</span>
+            <span class="indicator" style="background: var(--color-couples);"></span>
+        </button>
+        <button class="category-btn" onclick="startGame('friends')">
+            <span>חברים 🍻</span>
+            <span class="indicator" style="background: var(--color-friends);"></span>
+        </button>
+        <button class="category-btn" onclick="startGame('family')">
+            <span>הורה וילד 👨‍👧</span>
+            <span class="indicator" style="background: var(--color-family);"></span>
+        </button>
     </div>
 
     <div id="gameScreen">
@@ -186,8 +250,8 @@
             <h1 id="gameTitle">דע - אותי</h1>
             <div id="diceDisplay" class="dice-roll">🎲</div>
             <div id="categoryDisplay" class="category-badge">לחצו להתחלה</div>
-            <div id="questionDisplay" class="question-card">מוכנים?</div>
-            <button class="btn-main" onclick="play()">הטל קובייה!</button>
+            <div id="questionDisplay" class="question-card">מוכנים לגלות?</div>
+            <button class="btn-main" id="mainActionBtn" onclick="play()">הטל קובייה!</button>
             <button class="btn-back" onclick="showMenu()">חזרה לתפריט</button>
         </div>
 
@@ -197,7 +261,7 @@
             <button class="btn-shot" onclick="resetShots(1)">↺</button>
         </div>
 
-        <div class="shot-counter" id="groupShotCounter" style="display: none; justify-content: center; gap: 20px;">
+        <div class="shot-counter" id="groupShotCounter" style="display: none; justify-content: center; gap: 30px;">
             <span class="group-label">סופר קבוצתי</span>
             <button class="btn-shot" onclick="addShot('group')">+</button>
             <div id="shots-pgroup" class="shot-display"></div>
@@ -250,9 +314,8 @@
 
     // State Variables
     let currentMode = null;
-    let usedQuestions = {}; // Will be initialized dynamically based on the selected mode
+    let usedQuestions = {}; 
     const diceIcons = ["", "⚀", "⚁", "⚂", "⚃", "⚄", "⚅"];
-    // Added 'group' for the Friends mode general counter
     let scores = { 1: 0, 2: 0, group: 0 };
     const maxShots = 5;
 
@@ -260,56 +323,47 @@
     function startGame(mode) {
         currentMode = mode;
         
-        // Hide Menu, Show Game
         document.getElementById('menuScreen').style.display = 'none';
         document.getElementById('gameScreen').style.display = 'flex';
         
-        // Setup UI based on mode
         const categoryDisplay = document.getElementById('categoryDisplay');
         const topShot = document.getElementById('topShotCounter');
         const bottomShot = document.getElementById('bottomShotCounter');
         const groupShot = document.getElementById('groupShotCounter');
 
+        // Dynamic Theme Colors
         if (mode === 'family') {
+            document.documentElement.style.setProperty('--accent', 'var(--color-family)');
             categoryDisplay.innerText = questionsDB.family.title;
-            categoryDisplay.style.background = "#4da6ff"; // Blueish for family
-            // Hide all shot counters for Family mode
             topShot.style.display = 'none';
             bottomShot.style.display = 'none';
             groupShot.style.display = 'none';
-            
             usedQuestions.family = [];
             
         } else if (mode === 'friends') {
+            document.documentElement.style.setProperty('--accent', 'var(--color-friends)');
             categoryDisplay.innerText = questionsDB.friends.title;
-            categoryDisplay.style.background = "#ff4d6d";
-            // Show only the general group counter
             topShot.style.display = 'none';
             bottomShot.style.display = 'none';
             groupShot.style.display = 'flex';
-            
             usedQuestions.friends = [];
             
         } else if (mode === 'couples') {
+            document.documentElement.style.setProperty('--accent', 'var(--color-couples)');
             categoryDisplay.innerText = "משחק זוגי";
-            categoryDisplay.style.background = "#ff4d6d";
-            // Show player 1 and 2 counters
             topShot.style.display = 'flex';
             bottomShot.style.display = 'flex';
             groupShot.style.display = 'none';
-            
-            // Initialize memory for the 4 sub-categories
             usedQuestions = { 1: [], 2: [], 3: [], 4: [] };
         }
 
-        document.getElementById('questionDisplay').innerText = "מוכנים?";
+        document.getElementById('questionDisplay').innerText = "מוכנים לגלות?";
     }
 
     // Return to Menu
     function showMenu() {
         document.getElementById('menuScreen').style.display = 'flex';
         document.getElementById('gameScreen').style.display = 'none';
-        // Reset all shots when returning to menu
         resetShots(1);
         resetShots(2);
         resetShots('group');
@@ -326,7 +380,7 @@
         container.innerHTML = html;
     }
 
-    // Increment shot counter for a player or group
+    // Increment shot counter
     function addShot(player) {
         if (scores[player] < maxShots) {
             scores[player]++;
@@ -334,18 +388,17 @@
         }
     }
 
-    // Reset shot counter for a player or group
+    // Reset shot counter
     function resetShots(player) {
         scores[player] = 0;
         updateShotUI(player);
     }
 
-    // Initial render of shot counters
     updateShotUI(1);
     updateShotUI(2);
     updateShotUI('group');
 
-    // Main Game Logic: Triggered when "Roll Dice" button is clicked
+    // Main Game Logic
     function play() {
         const roll = Math.floor(Math.random() * 6) + 1;
         document.getElementById('diceDisplay').innerText = diceIcons[roll];
@@ -353,66 +406,57 @@
         const qDisplay = document.getElementById('questionDisplay');
         const cDisplay = document.getElementById('categoryDisplay');
 
-        // Logic for "Family" Mode (No shots allowed)
         if (currentMode === 'family') {
-            handleSingleArrayMode('family', questionsDB.family, qDisplay, cDisplay, "#4da6ff");
+            handleSingleArrayMode('family', questionsDB.family, qDisplay, cDisplay, "var(--color-family)");
             return;
         }
 
-        // Logic for "Friends" Mode
         if (currentMode === 'friends') {
             if (roll === 6) {
                 showShotScreen(qDisplay, cDisplay);
             } else {
-                handleSingleArrayMode('friends', questionsDB.friends, qDisplay, cDisplay, "#ff4d6d");
+                handleSingleArrayMode('friends', questionsDB.friends, qDisplay, cDisplay, "var(--color-friends)");
             }
             return;
         }
 
-        // Logic for "Couples" Mode (Uses sub-categories based on dice roll)
         if (currentMode === 'couples') {
             if (roll >= 5) {
                 showShotScreen(qDisplay, cDisplay);
             } else {
                 const subCategory = questionsDB.couples[roll];
                 
-                // Reset used memory if all questions in this sub-category are used
                 if (usedQuestions[roll].length === subCategory.questions.length) {
                     usedQuestions[roll] = [];
                 }
 
-                // Pick a random question that hasn't been asked yet
                 let randomIndex;
                 do {
                     randomIndex = Math.floor(Math.random() * subCategory.questions.length);
                 } while (usedQuestions[roll].includes(randomIndex));
 
-                // Save question as used
                 usedQuestions[roll].push(randomIndex);
                 
-                // Update UI
                 cDisplay.innerText = subCategory.title;
-                cDisplay.style.background = "#ff4d6d";
+                cDisplay.style.background = "var(--color-couples)";
                 qDisplay.innerText = subCategory.questions[randomIndex];
             }
         }
     }
 
-    // Helper function for rendering a Shot screen
+    // Shot screen helper
     function showShotScreen(qDisplay, cDisplay) {
         cDisplay.innerText = "זמן לשוט! 🥃";
-        cDisplay.style.background = "#ffd166"; 
+        cDisplay.style.background = "var(--color-shot)"; 
         qDisplay.innerHTML = "<span class='shot-msg'>שותים שוט! 🥃</span>";
     }
 
-    // Helper function for picking a question from a single flat array (Friends/Family)
+    // Flat array mode helper (Friends/Family)
     function handleSingleArrayMode(modeKey, dataObject, qDisplay, cDisplay, color) {
-        // Reset memory if all questions used
         if (usedQuestions[modeKey].length === dataObject.questions.length) {
             usedQuestions[modeKey] = [];
         }
 
-        // Pick a random unasked question
         let randomIndex;
         do {
             randomIndex = Math.floor(Math.random() * dataObject.questions.length);
@@ -420,7 +464,6 @@
 
         usedQuestions[modeKey].push(randomIndex);
         
-        // Update UI
         cDisplay.innerText = dataObject.title;
         cDisplay.style.background = color;
         qDisplay.innerText = dataObject.questions[randomIndex];
