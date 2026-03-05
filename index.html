@@ -6,9 +6,8 @@
     
     <title>Know Me | דע - אותי</title>
     
-    <link rel="icon" type="image/png" href="favicon.png">
-
     <style>
+        /* CSS Variables for easy theme management */
         :root {
             --bg: #1a1a1a;
             --card: #2d2d2d;
@@ -17,7 +16,7 @@
             --shot-color: #ffd166;
         }
 
-        /* Essential mobile fix: Ensure the app fits exactly into the screen */
+        /* Essential mobile viewport setup */
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: var(--bg);
@@ -26,7 +25,6 @@
             flex-direction: column;
             align-items: center;
             justify-content: space-between;
-            /* Using dvh (Dynamic Viewport Height) for mobile browser bars */
             height: 100vh;
             height: 100dvh; 
             margin: 0;
@@ -36,7 +34,54 @@
             touch-action: manipulation;
         }
 
-        /* Shot Counter - Compact for mobile */
+        /* Menu Screen Styles */
+        #menuScreen {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            width: 100%;
+            flex-grow: 1;
+        }
+
+        .menu-title {
+            color: var(--accent);
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            text-shadow: 0 0 10px rgba(255, 77, 109, 0.5);
+        }
+
+        .category-btn {
+            width: 80%;
+            max-width: 300px;
+            padding: 15px;
+            border-radius: 15px;
+            border: 2px solid var(--accent);
+            background: transparent;
+            color: var(--text);
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .category-btn:active {
+            background: var(--accent);
+            transform: scale(0.95);
+        }
+
+        /* Game Screen Styles (Hidden by default) */
+        #gameScreen {
+            display: none;
+            width: 100%;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            flex-grow: 1;
+        }
+
+        /* Shot Counter Components */
         .shot-counter {
             background: rgba(255, 255, 255, 0.05);
             padding: 5px 15px;
@@ -51,19 +96,11 @@
         }
 
         .player-top { transform: rotate(180deg); }
-
         .shot-display { font-size: 1.2rem; letter-spacing: 2px; }
+        .shot-glass { opacity: 0.2; transition: all 0.3s ease; }
+        .shot-glass.filled { opacity: 1; filter: drop-shadow(0 0 5px var(--shot-color)); }
 
-        .shot-glass {
-            opacity: 0.2;
-            transition: all 0.3s ease;
-        }
-
-        .shot-glass.filled {
-            opacity: 1;
-            filter: drop-shadow(0 0 5px var(--shot-color));
-        }
-
+        /* Game Area Elements */
         .container {
             width: 100%;
             display: flex;
@@ -75,35 +112,27 @@
         }
 
         h1 { color: var(--accent); margin: 0; font-size: 1.6rem; }
-
         .dice-roll { font-size: 2.8rem; line-height: 1; }
-
-        .category-badge {
-            padding: 5px 15px;
-            border-radius: 20px;
-            font-weight: bold;
-            background: var(--accent);
-            font-size: 0.85rem;
-        }
-
+        .category-badge { padding: 5px 15px; border-radius: 20px; font-weight: bold; background: var(--accent); font-size: 0.85rem; }
+        
         .question-card {
             background: var(--card);
             padding: 20px;
             border-radius: 15px;
             box-shadow: 0 5px 15px rgba(0,0,0,0.4);
-            min-height: 120px;
-            max-height: 25vh; /* Prevents overflow on small screens */
-            width: 100%;
+            min-height: 140px;
+            width: 90%;
             max-width: 350px;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 1.2rem;
+            text-align: center;
             border: 1px solid #444;
             box-sizing: border-box;
-            overflow-y: auto;
         }
 
+        /* Buttons */
         .btn-main {
             background: var(--accent);
             color: white;
@@ -113,56 +142,156 @@
             border-radius: 50px;
             font-weight: bold;
             box-shadow: 0 4px 10px rgba(255, 77, 109, 0.3);
-        }
-
-        .btn-shot {
-            background: var(--shot-color);
-            border: none;
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            font-weight: bold;
             cursor: pointer;
         }
 
+        .btn-back {
+            background: transparent;
+            color: #888;
+            border: none;
+            margin-top: 10px;
+            text-decoration: underline;
+            font-size: 0.9rem;
+            cursor: pointer;
+        }
+
+        .btn-shot { background: var(--shot-color); border: none; width: 30px; height: 30px; border-radius: 50%; font-weight: bold; cursor: pointer; }
         .shot-msg { color: var(--shot-color); font-weight: bold; font-size: 1.5rem; }
     </style>
 </head>
 <body>
 
-    <div class="shot-counter player-top">
-        <button class="btn-shot" onclick="addShot(2)">+</button>
-        <div id="shots-p2" class="shot-display"></div>
-        <button class="btn-shot" onclick="resetShots(2)">↺</button>
+    <div id="menuScreen">
+        <div class="menu-title">Know Me</div>
+        <button class="category-btn" onclick="startGame('couples')">זוגות 🤍</button>
+        <button class="category-btn" onclick="startGame('friends')">חברים 🍻</button>
+        <button class="category-btn" onclick="startGame('family')" style="border-color: #4da6ff;">הורה וילד 👨‍👧</button>
     </div>
 
-    <div class="container">
-        <h1>דע - אותי</h1>
-        <div id="diceDisplay" class="dice-roll">🎲</div>
-        <div id="categoryDisplay" class="category-badge">לחצו להתחלה</div>
-        <div id="questionDisplay" class="question-card">מוכנים?</div>
-        <button class="btn-main" onclick="play()">הטל קובייה!</button>
-    </div>
+    <div id="gameScreen">
+        <div class="shot-counter player-top" id="topShotCounter">
+            <button class="btn-shot" onclick="addShot(2)">+</button>
+            <div id="shots-p2" class="shot-display"></div>
+            <button class="btn-shot" onclick="resetShots(2)">↺</button>
+        </div>
 
-    <div class="shot-counter">
-        <button class="btn-shot" onclick="addShot(1)">+</button>
-        <div id="shots-p1" class="shot-display"></div>
-        <button class="btn-shot" onclick="resetShots(1)">↺</button>
+        <div class="container">
+            <h1 id="gameTitle">דע - אותי</h1>
+            <div id="diceDisplay" class="dice-roll">🎲</div>
+            <div id="categoryDisplay" class="category-badge">לחצו להתחלה</div>
+            <div id="questionDisplay" class="question-card">מוכנים?</div>
+            <button class="btn-main" onclick="play()">הטל קובייה!</button>
+            <button class="btn-back" onclick="showMenu()">חזרה לתפריט</button>
+        </div>
+
+        <div class="shot-counter" id="bottomShotCounter">
+            <button class="btn-shot" onclick="addShot(1)">+</button>
+            <div id="shots-p1" class="shot-display"></div>
+            <button class="btn-shot" onclick="resetShots(1)">↺</button>
+        </div>
     </div>
 
 <script>
-    const data = {
-        1: { name: "הכרות עמוקה", questions: ["מהי התכונה שהכי קשה לך לקבל באנשים?", "מה גורם לך להרגיש חיים באמת?", "מה ההרגל הכי מוזר שלך?", "מהי שפת האהבה שלך?", "מה הכי מרגיע אותך כשאתה לחוץ?", "מהו הפחד הכי לא רציונלי שלך?", "מה היית שואל את אלוהים?", "האם אתה מאמין בנשמות תאומות?", "מה הדבר שהכי קשה לך לסלוח עליו?", "איזו סיטואציה גרמה לך להרגיש הכי אמיץ?"] },
-        2: { name: "מסע בזמן", questions: ["אילו פצעים מהעבר עדיין משפיעים עליך?", "מי השפיע עליך הכי הרבה בחיים?", "מהו זיכרון הילדות האהוב עליך?", "מה הדבר הכי מביך שקרה לך?", "מה ההישג שאתה הכי גאה בו?", "מה הטעות הכי טובה שעשית?", "אם היית יכול לתת עצה לעצמך בגיל 20, מה היא היתה?"] },
-        3: { name: "הקשר שלנו", questions: ["מה הדבר שאני עושה שגורם לך להרגיש אהוב?", "מה הרושם הראשוני שהיה לך עלי?", "איזו תכונה שלי היית רוצה לאמץ?", "מהו הרגע שבו הרגשת הכי קרוב אלי?", "מה הדבר שגורם לך להרגיש בטוח איתי?", "מה היית רוצה שישאלו אותך יותר?", "איזו הרפתקה היית רוצה שנעשה יחד?"] },
-        4: { name: "מיניות", questions: ["ספר על פנטזיה מינית שיש לך", "מה הכי מדליק אותך אצלי?", "תאר במילים מה היית רוצה לעשות לי עכשיו", "מה התנוחה האהובה עליך ולמה?", "איפה המקום הכי נועז שתרצה לעשות בו סקס?", "סקס עם גרביים - כן או לא?", "מה המחשבה הכי פרועה שעברה לך בראש לגבינו לאחרונה?", "איך אתה מעדיף שייזמו איתך?"] }
+    // Database containing all questions organized by game modes
+    const questionsDB = {
+        couples: {
+            1: { 
+                title: "הכרות עמוקה", 
+                questions: [
+                    "מהי התכונה שהכי קשה לך לקבל באנשים אחרים?", "מה גורם לך להרגיש חיים באמת?", "מה ההרגל הכי מוזר שלך שלא הרבה יודעים עליו?", "מה היא שפת האהבה שלך?", "אילו דברים קטנים משפרים את מצב הרוח שלך?", "מה ההרגל הכי גרוע שלך?", "מה עוזר לך להרגע כשאתה לחוץ?", "מה הדבר שאתה מחכה לו כל יום?", "מה הדבר שאתה היית מקווה להיות טוב בו?", "מהו נושא שאתה מרגיש שהוא 'חור בהשכלה' אצלך והיית רוצה ללמוד?", "מה הדבר הכי מוזר שאתה מאמין בו (אפילו קצת)?", "מהו הדבר שגורם לך להרגיש הכי 'בבית' (זה יכול להיות ריח, מקום או אדם)?", "איזו תכונה אצלך אנשים נוטים לפרש לא נכון בדרך כלל?", "מהו הדבר שהכי קשה לך לסלוח עליו?", "מהו הפחד הכי לא רציונלי שלך?", "איזה נושא בעולם יכול לגרום לך לדבר במשך שעות בלי להשתעמם?", "מהו הדבר שאתה הכי מפחד לאבד בחיים שלך?", "על מה בחיים שלך אתה מרגיש שאתה מבזבז יותר מדי זמן, למרות שאתה יודע את זה?", "באיזו סיטואציה בחיים הרגשת הכי אמיץ?", "באיזו סיטואציה בחיים הרגשת הכי 'לא שייך'?", "אם היית פוגש את אלוהים, מה הדבר הראשון שהיית שואל/אומר לו?", "האם אתה מאמין שלכל דבר שקורה יש סיבה, או שהכל מקרי?", "לדעת את האמת הכואבת או לחיות בשקר מאושר?", "מהי ה'מסכה' הכי נפוצה שאתה עוטה כשאתה פוגש אנשים חדשים?", "מה הדבר שהכי מרגש אותך לגבי העתיד שלך?", "האם אתה מאמין בנשמות תאומות, או שאהבה היא עבודה קשה ובחירה יומיומית?", "אם היית יכול לראות סטטיסטיקה אחת על החיים שלך כשייגמרו, מה היית בוחר לראות?", "איזה חבר מהעבר שלך היית רוצה לחזור להיות חבר שלו בהווה?", "מה גורם לך להרגיש שאתה באמת מצליח בחיים?", "אם היית יכול להיות כרגע בכל מקום בעולם, איפה היית רוצה להיות?", "אם היית צריך לבחור לעצמך שם אחר חדש, מה הוא היה?", "מה הדבר הכי חשוב שלמדת על עצמך בשנה האחרונה?", "אם לא היו מגבלות של זמן, כסף או פחד, מה היית עושה עכשיו?"
+                ] 
+            },
+            2: { 
+                title: "מסע בזמן", 
+                questions: [
+                    "אילו פצעים מהעבר שלך עדיין משפיעים עליך?", "מי השפיע עליך בצורה הכי משמעותית בחיים, ואיך?", "מהו זיכרון הילדות האהוב עליך?", "מה הדבר הכי מביך שקרה לך?", "מה הדבר הכי טוב שקרה לך עד כה בחיים?", "אם היית יכול לשנות דבר אחד בדרך שבה גידלו אותך, מה זה היה?", "מהו ההישג שאתה הכי גאה בו, שלא מופיע בקורות החיים שלך?", "מהי המחמאה הכי יפה שקיבלת אי פעם?", "מהי הטעות הכי 'טובה' שעשית בחיים – כזו שבזמנו נראתה כמו כישלון אבל הובילה אותך למקום מעולה?", "אם היית יכול לחזור בזמן ולתת לעצמך בגיל 20 עצה אחת, מה היית אומר?", "מהו הדבר שאתה עושה היום שאותו ילד שהיית היה הכי גאה בה? ולמה?"
+                ] 
+            },
+            3: { 
+                title: "הקשר שלנו", 
+                questions: [
+                    "מה היית רוצה שישאלו אותך?", "מה הדבר שאני עושה שגורם לך להרגיש אהוב?", "מה הדבר שאתה הכי הרבה מעריך בי?", "איזה הרפתקאה היית רוצה שנעשה יחד?", "מה הרושם הראשוני שהיה לך עלי כשנפגשנו?", "מה המקום שהיית הכי רוצה שנבקר בו?", "מה ה'דגל הירוק' הכי משמעותי עבורך אצל אנשים?", "איזו תכונה שלי היית רוצה 'לאמץ' לעצמך?", "מהו הדבר שהכי הופתעת לגלות עלי מאז שנפגשנו?", "מהו הרגע שבו הרגשת הכי קרוב אלי עד עכשיו?", "אם היינו צריכים להגדיר 'חוק' אחד לקשר שלנו, מה הוא היה?", "מהו הדבר שאתה חושב שאני הכי לא מבינה לגביך?", "מה הדבר שגורם לך להרגיש הכי בטוח איתי?"
+                ] 
+            },
+            4: { 
+                title: "מיניות", 
+                questions: [
+                    "ספר על פנטזיה מינית שיש לך", "מהו הדבר שהכי 'מדליק' (Turn-on) אותך אצל הצד השני ברגע הראשון?", "מה החלק שאתה הכי אוהב בגוף שלך? ובגוף שלי?", "מה המחשבה הכי פרועה שעברה לך בראש לגבינו לאחרונה?", "איך אתה מעדיף שייזמו איתך – במגע ישיר, במילים או ברמזים?", "תתאר לי במילים (בלי לגעת) בדיוק מה היית רוצה לעשות לי עכשיו אם היינו לבד לגמרי", "מהי התנוחה האהובה עליך ולמה?", "איך נראה ה'לפני' (Foreplay) האידיאלי מבחינתך? כמה זמן הוא צריך להימשך?", "מהי דעתך על שימוש באביזרים או בצעצועים בתוך הקשר?", "איפה המקום הכי 'נועז' שבו היית רוצה לעשות סקס?", "מהו הדבר שהכי מוריד לך (Turn-off) במיטה?", "מה עוזר לך להיכנס ל'מוד' (לאווירה) כשאתה לא שם?", "מעדיף לשכב (סקס) בחושך או באור?", "אתה מעדיף להיות השולט או הנשלט?", "בוקר או לילה?", "מהיר וחזק או איטי ומתמשך?", "למעלה או למטה?", "עירום מלא או עם הלבשה תחתונה סקסית?", "ספונטני על הספה או מתוכנן במיטה?", "איפה הכי היית רוצה שאני אנשק אותך עכשיו?", "סקס עם גרביים? כן או לא?", "איך אתה מרגיש לגבי משחקי תפקידים?", "אם היית יכול לבחור מקום ציבורי אחד שבו היינו יכולים לעשות 'משהו' בלי שיתפסו אותנו, איפה זה היה?"
+                ] 
+            }
+        },
+        friends: { 
+            title: "זמן עם החבר'ה", 
+            questions: [
+                "מה ההרגל הכי מוזר שלך שלא הרבה יודעים עליו?", "מה הדבר הכי מביך שקרה לך?", "אם היית צריך לבחור לעצמך שם אחר חדש, מה הוא היה?", "מהו נושא שאתה מרגיש שהוא 'חור בהשכלה' אצלך והיית רוצה ללמוד?", "מה הדבר הכי מוזר שאתה מאמין בו (אפילו קצת)?", "מהו הפחד הכי לא רציונלי שלך?", "מהו הכישרון הכי חסר תועלת שיש לך?", "מהו הדבר הכי מטופש שהאמנת בו בתור ילד/ה?", "אם היית דמות בסיטקום, איזו דמות היית?", "מהי הדעה הכי לא פופולרית שלך?", "מהי הרכישה הכי מיותרת שביצעת בחיים שלך?", "אם היית חייב להשתתף בתוכנית ריאליטי, איזו תוכנית זו הייתה?", "איזה נושא בעולם יכול לגרום לך לדבר במשך שעות בלי להשתעמם?", "על מה בחיים שלך אתה מרגיש שאתה מבזבז יותר מדי זמן, למרות שאתה יודע את זה?", "האם אתה מאמין שלכל דבר שקורה יש סיבה, או שהכל מקרי?", "לדעת את האמת הכואבת או לחיות בשקר מאושר?", "איזו תכונה אצלך אנשים נוטים לפרש לא נכון בדרך כלל?", "מהי ה'מסכה' הכי נפוצה שאתה עוטה כשאתה פוגש אנשים חדשים?", "מהי העצה הכי טובה שקיבלת אי פעם?", "זמן או כסף: מה יותר חשוב לך בנקודת הזמן הנוכחית בחיים?", "מהי הנורמה החברתית שאתה חושב שהיא הכי מיותרת?", "אם היית יכול לשנות חוק פיזיקלי אחד בעולם, מה הוא היה?", "מה הדבר הראשון שאתה עושה כשאתה קם בבוקר (באמת)?", "אם היית יכול לראות סטטיסטיקה אחת על החיים שלך כשייגמרו, מה היית בוחר לראות?", "מהו ההישג שאתה הכי גאה בו, שלא מופיע בקורות החיים שלך?", "מהי הטעות הכי 'טובה' שעשית בחיים – כזו שבזמנו נראתה כמו כישלון אבל הובילה אותך למקום מעולה?", "אם היית יכול לחזור בזמן ולתת לעצמך בגיל 20 עצה אחת, מה היית אומר?", "אם היית יכול להיות כרגע בכל מקום בעולם, איפה היית רוצה להיות?", "אם היית יכול לאכול ארוחת ערב עם כל אדם (חי או מת), מי זה היה?", "מהו הדבר שפעם התביישת בו והיום אתה גאה בו?", "מהו המקום הכי רחוק שהגעת אליו (פיזית או נפשית) ושינה אותך?", "מהו 'הדבר הגדול הבא' שאתה רוצה להשיג בחיים?", "מהי התכונה שאתה הכי מעריך אצל ההורים שלך והיית רוצה לאמץ?", "איזה סרט או ספר גרם לך לשנות את כל התפיסה שלך על נושא מסוים?", "מהו הדבר הכי משמעותי שקרה לך בחיים לגמרי במקרה?", "מהי ה'פדיחה' הכי גדולה שקרתה לך בדייט ראשון?", "מהי המתנה הכי טובה שקיבלת אי פעם?", "מהו הדבר שעשית בחיים שאתה בטוח שתספר עליו לנכדים שלך ביום מן הימים?", "מהי התכונה שאתה הכי אוהב בעצמך, אבל כמעט אף פעם לא מקבל עליה מחמאה?", "מהו הרגע בחיים שבו הרגשת שבאמת 'גדלת' והפכת למבוגר?"
+            ] 
+        },
+        family: { 
+            title: "הורה וילד", 
+            questions: [
+                "מהו הדבר שאתה הכי אוהב שאנחנו עושים ביחד?", "אם היית יכול לשנות חוק אחד בבית, מה הוא היה?", "מה הדבר שגורם לך להרגיש הכי אהוב על ידי?", "מתי בפעם האחרונה הרגשת שממש הצלחת במשהו והיית גאה בעצמך?", "מהו הזיכרון הכי מצחיק שיש לנו ביחד כמשפחה?", "אם היינו יכולים לצאת להרפתקה בכל מקום בעולם, לאן היית רוצה שנסע?", "איזה 'כוח על' היית נותן לי? ואיזה 'כוח על' היית רוצה לעצמך?", "מהו הדבר שהכי מפחיד אותך, ואיך אני יכול לעזור לך להרגיש בטוח יותר?", "מהו הסיפור האהוב עליך מהזמן שהיית קטן (או מהזמן שאני הייתי קטנה)?", "אם היינו מחליפים תפקידים ליום אחד, מה הדבר הראשון שהיית עושה בתור ההורה?", "מהו הדבר שאתה הכי גאה בו באופי שלך?", "מהו המקום שבו אתה מרגיש הכי בטוח ורגוע בעולם?", "מהו הדבר שאתה הכי אוהב ללמוד או לעשות בזמנך החופשי?", "אם היית יכול לבקש משאלה אחת עבור המשפחה שלנו, מה היא הייתה?", "מהו הדבר שאתה חושב שאני לא מבין לגביך מספיק טוב והיית רוצה שאדע?", "מהו הדבר הכי חשוב שלמדת ממני? ומה לדעתך אני למדתי ממך?", "איזה חלום היית רוצה שנגשים ביחד השנה?", "מה גורם לך להרגיש שאתה באמת 'אתה' כשאתה איתי?", "אם היית יכול להמציא מסורת משפחתית חדשה, מה היא הייתה?", "מהו הדבר שאתה הכי מחכה לו כשאתה חוזר הביתה בסוף היום?"
+            ] 
+        }
     };
 
-    const usedQuestions = { 1: [], 2: [], 3: [], 4: [] };
+    // State Variables
+    let currentMode = null;
+    let usedQuestions = {}; // Will be initialized dynamically based on the selected mode
     const diceIcons = ["", "⚀", "⚁", "⚂", "⚃", "⚄", "⚅"];
     let scores = { 1: 0, 2: 0 };
     const maxShots = 5;
 
+    // Transition from Menu to Game Screen
+    function startGame(mode) {
+        currentMode = mode;
+        
+        // Hide Menu, Show Game
+        document.getElementById('menuScreen').style.display = 'none';
+        document.getElementById('gameScreen').style.display = 'flex';
+        
+        // Setup UI based on mode
+        const categoryDisplay = document.getElementById('categoryDisplay');
+        const topShot = document.getElementById('topShotCounter');
+        const bottomShot = document.getElementById('bottomShotCounter');
+
+        if (mode === 'family') {
+            categoryDisplay.innerText = questionsDB.family.title;
+            categoryDisplay.style.background = "#4da6ff"; // Blueish for family
+            // Hide shot counters for Family mode
+            topShot.style.display = 'none';
+            bottomShot.style.display = 'none';
+            // Initialize memory for this array
+            usedQuestions.family = [];
+        } else if (mode === 'friends') {
+            categoryDisplay.innerText = questionsDB.friends.title;
+            categoryDisplay.style.background = "#ff4d6d";
+            // Show shot counters
+            topShot.style.display = 'flex';
+            bottomShot.style.display = 'flex';
+            usedQuestions.friends = [];
+        } else if (mode === 'couples') {
+            categoryDisplay.innerText = "משחק זוגי";
+            categoryDisplay.style.background = "#ff4d6d";
+            // Show shot counters
+            topShot.style.display = 'flex';
+            bottomShot.style.display = 'flex';
+            // Initialize memory for the 4 sub-categories
+            usedQuestions = { 1: [], 2: [], 3: [], 4: [] };
+        }
+
+        document.getElementById('questionDisplay').innerText = "מוכנים?";
+    }
+
+    // Return to Menu
+    function showMenu() {
+        document.getElementById('menuScreen').style.display = 'flex';
+        document.getElementById('gameScreen').style.display = 'none';
+        // Reset shots when returning to menu
+        resetShots(1);
+        resetShots(2);
+    }
+
+    // Update the visual representation of the shot glasses
     function updateShotUI(player) {
         const container = document.getElementById(`shots-p${player}`);
         let html = "";
@@ -173,6 +302,7 @@
         container.innerHTML = html;
     }
 
+    // Increment shot counter for a player
     function addShot(player) {
         if (scores[player] < maxShots) {
             scores[player]++;
@@ -180,36 +310,95 @@
         }
     }
 
+    // Reset shot counter for a player
     function resetShots(player) {
         scores[player] = 0;
         updateShotUI(player);
     }
 
+    // Initial render of shot counters
     updateShotUI(1);
     updateShotUI(2);
 
+    // Main Game Logic: Triggered when "Roll Dice" button is clicked
     function play() {
         const roll = Math.floor(Math.random() * 6) + 1;
         document.getElementById('diceDisplay').innerText = diceIcons[roll];
+        
         const qDisplay = document.getElementById('questionDisplay');
         const cDisplay = document.getElementById('categoryDisplay');
 
-        if (roll <= 4) {
-            const category = data[roll];
-            if (usedQuestions[roll].length === category.questions.length) usedQuestions[roll] = [];
-            let randomIndex;
-            do {
-                randomIndex = Math.floor(Math.random() * category.questions.length);
-            } while (usedQuestions[roll].includes(randomIndex));
-            usedQuestions[roll].push(randomIndex);
-            cDisplay.innerText = category.name;
-            cDisplay.style.background = "#ff4d6d";
-            qDisplay.innerText = category.questions[randomIndex];
-        } else {
-            cDisplay.innerText = "זמן לשוט! 🥃";
-            cDisplay.style.background = "#ffd166"; 
-            qDisplay.innerHTML = "<span class='shot-msg'>שותים שוט! 🥃</span>";
+        // Logic for "Family" Mode (No shots allowed)
+        if (currentMode === 'family') {
+            handleSingleArrayMode('family', questionsDB.family, qDisplay, cDisplay, "#4da6ff");
+            return;
         }
+
+        // Logic for "Friends" Mode
+        if (currentMode === 'friends') {
+            if (roll === 6) {
+                showShotScreen(qDisplay, cDisplay);
+            } else {
+                handleSingleArrayMode('friends', questionsDB.friends, qDisplay, cDisplay, "#ff4d6d");
+            }
+            return;
+        }
+
+        // Logic for "Couples" Mode (Uses sub-categories based on dice roll)
+        if (currentMode === 'couples') {
+            if (roll >= 5) {
+                showShotScreen(qDisplay, cDisplay);
+            } else {
+                const subCategory = questionsDB.couples[roll];
+                
+                // Reset used memory if all questions in this sub-category are used
+                if (usedQuestions[roll].length === subCategory.questions.length) {
+                    usedQuestions[roll] = [];
+                }
+
+                // Pick a random question that hasn't been asked yet
+                let randomIndex;
+                do {
+                    randomIndex = Math.floor(Math.random() * subCategory.questions.length);
+                } while (usedQuestions[roll].includes(randomIndex));
+
+                // Save question as used
+                usedQuestions[roll].push(randomIndex);
+                
+                // Update UI
+                cDisplay.innerText = subCategory.title;
+                cDisplay.style.background = "#ff4d6d";
+                qDisplay.innerText = subCategory.questions[randomIndex];
+            }
+        }
+    }
+
+    // Helper function for rendering a Shot screen
+    function showShotScreen(qDisplay, cDisplay) {
+        cDisplay.innerText = "זמן לשוט! 🥃";
+        cDisplay.style.background = "#ffd166"; 
+        qDisplay.innerHTML = "<span class='shot-msg'>שותים שוט! 🥃</span>";
+    }
+
+    // Helper function for picking a question from a single flat array (Friends/Family)
+    function handleSingleArrayMode(modeKey, dataObject, qDisplay, cDisplay, color) {
+        // Reset memory if all questions used
+        if (usedQuestions[modeKey].length === dataObject.questions.length) {
+            usedQuestions[modeKey] = [];
+        }
+
+        // Pick a random unasked question
+        let randomIndex;
+        do {
+            randomIndex = Math.floor(Math.random() * dataObject.questions.length);
+        } while (usedQuestions[modeKey].includes(randomIndex));
+
+        usedQuestions[modeKey].push(randomIndex);
+        
+        // Update UI
+        cDisplay.innerText = dataObject.title;
+        cDisplay.style.background = color;
+        qDisplay.innerText = dataObject.questions[randomIndex];
     }
 </script>
 </body>
