@@ -13,23 +13,20 @@
     <style>
         /* CSS Variables - Calm Boho Palette */
         :root {
-            /* Background Colors for different states */
-            --bg-default: #2C4236; /* Base calm bottle green for menu and other modes */
-            --bg-c1: #3A2E35;      /* Deep muted plum for Deep Connection */
-            --bg-c2: #4A4032;      /* Deep olive/sand for Time Travel */
-            --bg-c3: #2A3B40;      /* Deep slate teal for Our Connection */
-            --bg-c4: #47262A;      /* Dark wine/burgundy for Sexuality */
-            --bg-shot: #B86B25;    /* Rich amber/orange for Shots */
+            --bg-default: #2C4236; 
+            --bg-c1: #3A2E35;      
+            --bg-c2: #4A4032;      
+            --bg-c3: #2A3B40;      
+            --bg-c4: #47262A;      
+            --bg-shot: #B86B25;    
 
-            --card: #FDFBF7;        /* Soft off-white for cards to pop */
-            --text-dark: #1E2D26;   /* Dark green/gray for text on cards */
-            --text-light: #E8EDE9;  /* Light text for titles on dark bg */
+            --card: #FDFBF7;        
+            --text-dark: #1E2D26;   
+            --text-light: #E8EDE9;  
             --shadow: rgba(0, 0, 0, 0.2); 
             
-            /* Dynamic Accent Color (Changes via JS) */
             --accent: #C87971;      
             
-            /* Category Accent Colors */
             --color-couples: #C87971; 
             --color-friends: #D4A373; 
             --color-family: #8A9A86;  
@@ -51,8 +48,18 @@
             box-sizing: border-box;
             overflow: hidden;
             touch-action: manipulation;
-            /* Smooth transition for background color changes */
             transition: background-color 0.6s ease;
+        }
+
+        /* Lite Mode (Slow Network/Device Adaptation) */
+        body.lite-mode {
+            transition: none !important; /* Disable heavy background transitions */
+        }
+        body.lite-mode * {
+            box-shadow: none !important; /* Disable shadows to save rendering time */
+        }
+        body.lite-mode .spin-anim {
+            animation: none !important; /* Disable 3D spin on slow connections */
         }
 
         /* Menu Screen Styles */
@@ -134,8 +141,7 @@
         }
 
         .player-top { transform: rotate(180deg); }
-        .shot-display { font-size: 1.3rem; letter-spacing: 5px; }
-        .shot-glass { opacity: 0.15; transition: all 0.3s ease; filter: grayscale(100%); }
+        .shot-glass { font-size: 1.3rem; opacity: 0.15; transition: all 0.3s ease; filter: grayscale(100%); letter-spacing: 5px; }
         .shot-glass.filled { opacity: 1; filter: grayscale(0%); }
 
         /* Group Shot Counter */
@@ -184,7 +190,6 @@
             box-shadow: inset 0 2px 4px rgba(0,0,0,0.5), 0 1px 1px rgba(255,255,255,0.8);
         }
         
-        /* Dice Spin Animation */
         .spin-anim {
             animation: rollDice 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
@@ -224,7 +229,6 @@
             box-sizing: border-box;
         }
 
-        /* Buttons */
         .btn-main {
             background: var(--accent);
             color: white;
@@ -239,9 +243,7 @@
             transition: all 0.2s ease;
         }
 
-        .btn-main:active {
-            transform: scale(0.92);
-        }
+        .btn-main:active { transform: scale(0.92); }
 
         .btn-back {
             background: transparent;
@@ -267,6 +269,32 @@
         }
         
         .shot-msg { color: var(--color-shot); font-weight: 800; font-size: 1.8rem; }
+
+        /* =========================================
+           RESPONSIVE DESIGN (Media Queries)
+           ========================================= */
+        
+        /* Small Phones (e.g., iPhone SE) */
+        @media (max-width: 380px) {
+            .menu-title { font-size: 2.8rem; }
+            .category-btn { padding: 15px 20px; font-size: 1.2rem; }
+            h1 { font-size: 1.6rem; }
+            .dice-container { width: 60px; height: 60px; }
+            .dice-dot { width: 12px; height: 12px; }
+            .question-card { font-size: 1.2rem; padding: 20px 15px; min-height: 130px; }
+            .btn-main { padding: 12px 35px; font-size: 1.1rem; }
+        }
+
+        /* Very Short Screens (Landscape Mode or small height) */
+        @media (max-height: 650px) {
+            body { padding: 5px; }
+            .container { gap: 10px; }
+            .menu-title { margin-bottom: 15px; font-size: 2.5rem; }
+            .question-card { min-height: 100px; padding: 15px; font-size: 1.1rem; }
+            .dice-container { width: 55px; height: 55px; }
+            .dice-dot { width: 10px; height: 10px; }
+            .shot-counter { height: 45px; padding: 5px 10px; }
+        }
     </style>
 </head>
 <body>
@@ -293,7 +321,7 @@
     <div id="gameScreen">
         <div class="shot-counter player-top" id="topShotCounter">
             <button class="btn-shot" onclick="addShot(2)">+</button>
-            <div id="shots-p2" class="shot-display"></div>
+            <div id="shots-p2"></div>
             <button class="btn-shot" onclick="resetShots(2)">↺</button>
         </div>
 
@@ -311,7 +339,7 @@
 
         <div class="shot-counter" id="bottomShotCounter">
             <button class="btn-shot" onclick="addShot(1)">+</button>
-            <div id="shots-p1" class="shot-display"></div>
+            <div id="shots-p1"></div>
             <button class="btn-shot" onclick="resetShots(1)">↺</button>
         </div>
 
@@ -325,6 +353,37 @@
     </div>
 
 <script>
+    // === NETWORK & PERFORMANCE ADAPTATION ===
+    function adaptToDeviceAndNetwork() {
+        let isLiteMode = false;
+        
+        // Check Network Information API
+        const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+        if (connection) {
+            // Enable Lite Mode if user is on slow 3G/2G or has "Save Data" turned on
+            if (connection.saveData || ['slow-2g', '2g', '3g'].includes(connection.effectiveType)) {
+                isLiteMode = true;
+                console.log("Slow network or Save-Data detected: Enabling Lite Mode");
+            }
+        }
+
+        // Check Accessibility settings for Reduced Motion
+        const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        if (prefersReducedMotion) {
+            isLiteMode = true;
+            console.log("Reduced motion preference detected: Enabling Lite Mode");
+        }
+
+        // Apply Lite Mode classes
+        if (isLiteMode) {
+            document.body.classList.add('lite-mode');
+        }
+    }
+    
+    // Run adaptation on load
+    adaptToDeviceAndNetwork();
+
+    // === DATABASE ===
     const questionsDB = {
         couples: {
             1: { 
@@ -359,7 +418,8 @@
     let scores = { 1: 0, 2: 0, group: 0 };
     const maxShots = 5;
 
-    // Generates the HTML for the realistic CSS dice dots
+    // === GAME LOGIC ===
+
     function renderDiceFace(roll) {
         const positions = {
             1: ['50%,50%'],
@@ -379,7 +439,6 @@
         document.getElementById('diceDisplay').innerHTML = dotsHTML;
     }
 
-    // Set default dice face to 6 on load
     renderDiceFace(6);
 
     function startGame(mode) {
@@ -393,7 +452,6 @@
         const bottomShot = document.getElementById('bottomShotCounter');
         const groupShot = document.getElementById('groupShotCounter');
 
-        // Reset to default background when starting a game
         document.body.style.backgroundColor = 'var(--bg-default)';
 
         if (mode === 'family') {
@@ -429,7 +487,6 @@
         document.getElementById('menuScreen').style.display = 'flex';
         document.getElementById('gameScreen').style.display = 'none';
         
-        // Reset background back to default menu color
         document.body.style.backgroundColor = 'var(--bg-default)';
         
         resetShots(1);
@@ -473,14 +530,17 @@
     function play() {
         const diceDisplay = document.getElementById('diceDisplay');
         
-        // Remove animation class and trigger reflow to restart it
         diceDisplay.classList.remove('spin-anim');
-        void diceDisplay.offsetWidth;
-        diceDisplay.classList.add('spin-anim');
+        void diceDisplay.offsetWidth; 
+        
+        // Only add animation if not in Lite Mode
+        if (!document.body.classList.contains('lite-mode')) {
+            diceDisplay.classList.add('spin-anim');
+        }
 
         const roll = Math.floor(Math.random() * 6) + 1;
         
-        // Change the dice face and text halfway through the animation
+        // Timeout syncs the text/dice update with the visual spin
         setTimeout(() => {
             renderDiceFace(roll);
             
@@ -509,7 +569,6 @@
                     document.body.style.backgroundColor = 'var(--bg-shot)';
                     showShotScreen(qDisplay, cDisplay);
                 } else {
-                    // Dynamically change background color based on the category rolled
                     document.body.style.backgroundColor = `var(--bg-c${roll})`;
                     
                     const subCategory = questionsDB.couples[roll];
@@ -530,7 +589,7 @@
                     qDisplay.innerText = subCategory.questions[randomIndex];
                 }
             }
-        }, 250); // Updates exactly when the dice is flipped 180 degrees
+        }, document.body.classList.contains('lite-mode') ? 0 : 250); 
     }
 
     function showShotScreen(qDisplay, cDisplay) {
